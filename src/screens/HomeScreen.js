@@ -1,21 +1,23 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, FlatList } from 'react-native';
 import CustomHeader from '../components/CustomHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import MenuItem from '../components/MenuItem';
 import { foodData, drinkData, snackData, sauceData } from '../database/menuData';
+import { MenuContext } from "../context/MenuContext"
 
-const edibles = {
-  foods:  {title1: "DELICIOUS", title11: "FOODS", title2: "FOOD FOR YOU", data: foodData},
-  drinks: {title1: "DRINKS", title11: "DRINKS", title2: "FOR YOU", data: drinkData},
-  snacks: {title1: "SNACKS", title11: "SNACKS", title2: "FOR YOU", data: snackData},
-  sauce:  {title1: "SAUCE", title11: "SAUCE", title2: "FOR YOU", data: sauceData},
-};
 
 const HomeScreen = ({ navigation }) => {
-  const searchRef = useRef(null);
-  const [searchInput, setSearchInput] = useState("");
+  const { menus } = useContext(MenuContext);
+
+  const edibles = {
+    foods:  {title1: "DELICIOUS", title11: "FOODS", title2: "FOOD FOR YOU", data: menus.foodData},
+    drinks: {title1: "DRINKS", title11: "DRINKS", title2: "FOR YOU", data: menus.drinkData},
+    snacks: {title1: "SNACKS", title11: "SNACKS", title2: "FOR YOU", data: menus.snackData},
+    sauce:  {title1: "SAUCE", title11: "SAUCE", title2: "FOR YOU", data: menus.sauceData},
+  };
+
   const [focusedField, setFocusedField] = useState(null);
   const [edible, setEdible] = useState("foods");
 
@@ -24,51 +26,51 @@ const HomeScreen = ({ navigation }) => {
       <CustomHeader title="drawer" navigation={navigation} />
 
       <View style={styles.homeContentsContainer}>
-        <View style={styles.title}>
-          <Text style={styles.firstTitle}>{edibles[edible].title1}</Text>
-          <Text style={styles.secondTitle}>{edibles[edible].title2}</Text>
-        </View>
-
-        <TouchableWithoutFeedback onPress={() => searchRef.current.focus()}>
-          <View style={styles.searchBar}>
-            <Ionicons style={styles.searchIcon} name="search-outline" size={22} color="black" />
-            <TextInput
-              ref={searchRef}
-              style={styles.textInput}
-              value={searchInput}
-              onChangeText={setSearchInput}
-              placeholder="Search here"
-            />
+        <View style={styles.upperSection}>
+          <View style={styles.title}>
+            <Text style={styles.firstTitle}>{edibles[edible].title1}</Text>
+            <Text style={styles.secondTitle}>{edibles[edible].title2}</Text>
           </View>
-        </TouchableWithoutFeedback>
 
-        <View style={styles.edibles}>
-          {['Foods', 'Drinks', 'Snacks', 'Sauce'].map((item) => (
+          <TouchableWithoutFeedback style={styles.searchBarContainer} onPress={() => navigation.navigate("Search")}>
+            <View style={styles.searchBar}>
+              <Ionicons style={styles.searchIcon} name="search-outline" size={22} color="black" />
+              <View style={styles.textInput}>
+                <Text style={styles.placeholderText}>Search here</Text>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+
+          <View style={styles.edibles}>
+            {['Foods', 'Drinks', 'Snacks', 'Sauce'].map((item) => (
+              <TouchableOpacity
+                key={item}
+                style={[
+                  styles.edibleOption,
+                  {
+                    borderBottomColor: focusedField === item ? '#FA4A0C' : '#B1B1B3',
+                    borderBottomWidth: focusedField === item ? 2 : 0,
+                  },
+                ]}
+                onPress={() => {
+                  setFocusedField(item);
+                  setEdible(item.toLowerCase());
+                }}
+              >
+                <Text style={styles.text}>{item}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <View style={styles.seeMore}>
             <TouchableOpacity
-              key={item}
-              style={[
-                styles.edibleOption,
-                {
-                  borderBottomColor: focusedField === item ? '#FA4A0C' : '#B1B1B3',
-                  borderBottomWidth: focusedField === item ? 2 : 0,
-                },
-              ]}
-              onPress={() => {
-                setFocusedField(item);
-                setEdible(item.toLowerCase());
-              }}
+            onPress={() => navigation.navigate("MenuList", {menuData: edibles[edible]})}
             >
-              <Text style={styles.text}>{item}</Text>
+              <Text style={styles.seeMoreText}>see more</Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          </View>
 
-        <TouchableOpacity
-         style={styles.seeMore}
-         onPress={() => navigation.navigate("MenuList", {menuData: edibles[edible]})}
-         >
-          <Text style={styles.seeMoreText}>see more</Text>
-        </TouchableOpacity>
+        </View>
 
         <FlatList
           style={styles.menuList}
@@ -87,12 +89,17 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   homeContentsContainer: {
     flex: 1,
+    // backgroundColor: "gray",
+  },
+  upperSection: {
+    flex: 1.15,
     paddingTop: 40,
-    paddingHorizontal: 20,
+    // backgroundColor: "yellow",
   },
   title: {
     // backgroundColor: "gray",
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   firstTitle: {
     fontFamily: "Bangers-Regular",
@@ -113,6 +120,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 40,
     elevation: 2, // Add shadow effect for Android
+    marginHorizontal: 20,
   },
   searchIcon: {
     position: "absolute",
@@ -132,6 +140,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 10,
     borderRadius: 10,
+    paddingHorizontal: 20,
   },
   edibleOption: {
     paddingHorizontal: 12,
@@ -140,12 +149,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     marginTop: 35,
+    paddingHorizontal: 20,
   },
   seeMoreText: {
     color: "#F00707",
   },
+  menuList: {
+    flex: 1,
+    // backgroundColor: "blue",
+  },
   separator: {
-    width: 20, // Adjust for horizontal spacing
+    width: 10,
   },
 });
 

@@ -6,11 +6,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // import { ThemeProvider } from '@react-navigation/native';
 import UserProvider from './src/context/UserContext';
 import ThemeProvider from './src/context/ThemeContext';
+import MenuProvider from './src/context/MenuContext';
 import CartProvider from './src/context/CartContext';
 import OrderProvider from './src/context/OrderContext';
 import FavoritesProvider from './src/context/FavoritesContext';
 import MainNavigator from './src/navigation/MainNavigator';
 import { fonts } from './src/constants/fonts';
+import UserDataProvider from './src/context/UserDataContext';
 
 
 SplashScreen.preventAutoHideAsync();  // Keep the splash screen visible until fonts are loaded
@@ -34,15 +36,19 @@ export default function App() {
   return (
     <UserProvider>
       <ThemeProvider>
-        <CartProvider>
-          <OrderProvider>
-            <FavoritesProvider>
-              <SafeAreaProvider>
-                <MainNavigator />
-              </SafeAreaProvider>
-            </FavoritesProvider>
-          </OrderProvider>
-        </CartProvider>
+        <MenuProvider>
+          <CartProvider>
+            <OrderProvider>
+              <FavoritesProvider>
+                <UserDataProvider>
+                  <SafeAreaProvider>
+                    <MainNavigator />
+                  </SafeAreaProvider>
+                </UserDataProvider>
+              </FavoritesProvider>
+            </OrderProvider>
+          </CartProvider>
+        </MenuProvider>
       </ThemeProvider>
     </UserProvider>
   );

@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
 import { CartContext } from '../context/CartContext';
+import { UserContext } from '../context/UserContext';
+import { OrderContext } from '../context/OrderContext';
 
 function shortenString(str) {
   if (str.length > 15) {
@@ -13,6 +15,20 @@ function shortenString(str) {
 
 const CheckoutScreen = ({ navigation }) => {
   const { cart, subTotal, totalPrice } = useContext(CartContext);
+  const { handleCheckout } = useContext(OrderContext);
+  const { user } = useContext(UserContext);
+
+  const submit = async () => {
+    const response = await handleCheckout();
+    response.success && navigation.navigate("Payment", { url: response.data.authorization_url });
+    console.log("checkoutData::: ", response.data);
+  }
+
+  // Get screen width
+  const screenWidth = Dimensions.get('window').width;
+  
+  // Calculate item size to ensure 3 items per row, including margin
+  const itemSize = (screenWidth - 65) / 3; // Subtract 40 for padding/margins, and divide by 3 for 3 columns
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -25,15 +41,15 @@ const CheckoutScreen = ({ navigation }) => {
 					<View style={styles.divider} />
           <View style={styles.infoRow}>
             <Text>Items ({cart.length})</Text>
-            <Text>GHC{subTotal}</Text>
+            <Text>GH₵ {subTotal}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text>Delivery Fee</Text>
-            <Text>GHC 20.00</Text>
+            <Text>GH₵ 20.00</Text>
           </View>
           <View style={styles.infoRow}>
 					<Text style={styles.total}>Total</Text>
-					<Text style={styles.total}>{totalPrice}</Text>
+					<Text style={styles.total}>GH₵ {totalPrice}</Text>
           </View>
         </View>
 
@@ -42,7 +58,7 @@ const CheckoutScreen = ({ navigation }) => {
           <Text style={styles.title}>CUSTOMER ADDRESS</Text>
 					<View style={styles.divider} />
           <Text style={styles.addressRow}>
-            John Doe | 1234 Main St, City, Country | +1234567890
+            {user.name} | {user.address.residential} | {user.address.phoneNumber}
           </Text>
         </View>
 
@@ -54,15 +70,16 @@ const CheckoutScreen = ({ navigation }) => {
             <Text style={styles.deliveryText}>Delivery Date: 25th Sep, 2024 | Door Delivery</Text>
           </View>
           <FlatList
+            style={styles.flatlist}
             data={cart}
             keyExtractor={(item) => item.id.toString()}
             numColumns={3}
             renderItem={({ item }) => (
-              <View style={styles.orderItem}>
-                <Image source={item.image} style={styles.orderItemImage} resizeMode={item.type === "circle" ? "cover" : "contain"} />
+              <TouchableOpacity style={[styles.orderItem, { width: itemSize, height: itemSize }]} onPress={() => navigation.navigate('FoodDetail', { foodItem: item })}>
+                <Image source={{ uri: item.imageUrl }} style={styles.orderItemImage} resizeMode={item.shape === "circle" ? "cover" : "contain"} />
                 <Text style={styles.orderItemText}>{shortenString(item.name)}</Text>
-                <Text style={styles.orderItemText}>Price: ₵{item.price}</Text>
-              </View>
+                <Text style={styles.orderItemText}>Price: GH₵ {item.price}</Text>
+              </TouchableOpacity>
             )}
             showsVerticalScrollIndicator={false}
 						scrollEnabled={false}  // Disable FlatList scrolling to allow ScrollView control
@@ -77,16 +94,19 @@ const CheckoutScreen = ({ navigation }) => {
         <View style={styles.card}>
           <View style={styles.paymentMethodHeader}>
             <Text style={styles.title}>PAYMENT METHOD</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('PaymentMethod')}>
+            <TouchableOpacity onPress={() => navigation.navigate('PaymentAndDelivery')}>
               <Text style={styles.changeMethodText}>Change Method</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.divider} />
-          <Text style={styles.paymentMethodText}>Mobile Money: MTN</Text>
+          <Text style={styles.paymentMethodText}>{user.paymentMethod.type === "Card" ? "Card" : `${user.paymentMethod.type}: ${user.paymentMethod.provider}`}</Text>
         </View>
 
       </ScrollView>
-				<TouchableOpacity style={styles.confirmOrderButton} >
+				<TouchableOpacity
+          style={styles.confirmOrderButton}
+          onPress={() => submit()}
+        >
 					<Text style={styles.confirmOrderButtonText}>Confirm Order</Text>
 				</TouchableOpacity>
     </SafeAreaView>
@@ -125,14 +145,14 @@ const styles = StyleSheet.create({
 	deliveryRow: {
     marginBottom: 10,
   },
+  flatlist: {
+  },
   deliveryText: {
     fontSize: 13,
     color: '#4D4D4D',
   },
   orderItem: {
 		alignItems: "center",
-		width: '32%',
-		height: 100,
     backgroundColor: '#FFFFFF',
 		paddingTop: 5,
     paddingBottom: 15,
@@ -148,7 +168,7 @@ const styles = StyleSheet.create({
     height: "80%",
   },
   orderItemText: {
-    fontSize: 10,
+    fontSize: 9,
 		fontWeight: "500"
   },
   modifyCartButton: {

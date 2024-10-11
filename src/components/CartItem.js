@@ -4,24 +4,24 @@ import { CartContext } from '../context/CartContext';
 import { Ionicons } from '@expo/vector-icons'; // Import icon library
 
 const CartItem = ({ item, navigation }) => {
-  const { handleRemoveFromCart, handleUpdateCartQuantity} = useContext(CartContext);
+  const { handleRemoveFromCart, handleAddToCart, handleUpdateCartQuantity} = useContext(CartContext);
 
   return (
   <View style={styles.cartItem} >
     <TouchableOpacity style={styles.cartItemImageContainer}  onPress={() => navigation.navigate('FoodDetail', { foodItem: item })}>
-      <Image source={item.image} style={styles.cartItemImage} resizeMode={item.type === "circle" ? "cover": "contain"}/>
+      <Image source={{ uri: item.imageUrl }} style={styles.cartItemImage} resizeMode={item.shape === "circle" ? "cover": "contain"}/>
     </TouchableOpacity>
 
     <View style={styles.cartItemCenter}>
       <Text style={styles.cartItemText}>{item.name}</Text>
-      <Text style={styles.cartItemPrice}>₵{item.price}</Text>
+      <Text style={styles.cartItemPrice}>GH₵ {item.price}</Text>
     </View>
 
     <View style={styles.cartItemRight}>
       {/* Delete Icon positioned at the top-right corner */}
       <TouchableOpacity
         style={styles.deleteButton}
-        onPress={() => handleRemoveFromCart(item.id)}>
+        onPress={() => handleRemoveFromCart(item)}>
         <Ionicons name="trash-outline" size={23} color="red" />
       </TouchableOpacity>
 
@@ -51,7 +51,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginHorizontal: 2,
     borderRadius: 15,
-    elevation: 3,
+    elevation: 2,
+    borderWidth: .5,
+		borderColor: "#D3D3D3",
   },
   cartItemImageContainer: {
     backgroundColor: "#F5F5F5",

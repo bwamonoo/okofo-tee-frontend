@@ -1,10 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
-import FavoritesScreen from '../screens/FavoritesScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import OrdersScreen from '../screens/OrdersScreen';
-import CustomTabIcon from '../components/CustomTabIcon';  // Import the custom icon component
-import { tabIcons } from '../constants/tabIcons';  // Your icons configuration
+import HomeScreen from '../../screens/HomeScreen';
+import FavoritesScreen from '../../screens/FavoritesScreen';
+import ProfileScreen from '../../screens/ProfileScreen';
+import OrdersScreen from '../../screens/OrdersScreen';
+import CustomTabIcon from '../../components/CustomTabIcon';  // import custom icon component
+import { tabIcons } from '../../constants/tabIcons';  // icons configuration
+import { Ionicons } from '@expo/vector-icons'; // For menu icon
 
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +33,7 @@ const TabNavigator = () => {
         inactiveTintColor: 'gray',
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="TabHome" component={HomeScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Favorites" component={FavoritesScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Orders" component={OrdersScreen} options={{ headerShown: false }} />

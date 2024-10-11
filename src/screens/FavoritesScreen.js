@@ -11,7 +11,7 @@ const FavoritesScreen = ({ navigation }) => {
 
   // Render the "delete" icon when swiping left
   const renderRightActions = (item) => (
-    <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveFromFavorites(item.id)}>
+    <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveFromFavorites(item)}>
       <Animated.View style={styles.deleteButtonContent}>
         <Ionicons name="trash-outline" size={24} color="white" />
         <Text style={styles.deleteText}>Remove</Text>
@@ -26,17 +26,19 @@ const FavoritesScreen = ({ navigation }) => {
       renderItem={({ item }) => (
         <Swipeable renderRightActions={() => renderRightActions(item)}>
           <View style={styles.favoriteItem}>
-            <View style={styles.favoriteItemImageContainer}>
-              <Image source={item.image} style={styles.favoriteItemImage} resizeMode="cover" />
-            </View>
+
+            <TouchableOpacity style={styles.favoriteItemImageContainer} onPress={() => navigation.navigate('FoodDetail', { foodItem: item })}>
+              <Image source={{ uri: item.imageUrl }} style={styles.favoriteItemImage} resizeMode={item.shape === "circle" ? "cover": "contain"} />
+            </TouchableOpacity>
+
             <View style={styles.favoriteItemDetails}>
               <Text style={styles.favoriteItemText}>{item.name}</Text>
-              <Text style={styles.favoriteItemPrice}>₵{item.price}</Text>
+              <Text style={styles.favoriteItemPrice}>GH₵ {item.price}</Text>
               {/* Keep the "Remove from Favorites" button */}
               <TouchableOpacity
                 style={styles.removeButton}
-                onPress={() => handleRemoveFromFavorites(item.id)}>
-                <Ionicons name="heart-dislike-outline" size={23} color="#FA4A0C" />
+                onPress={() => handleRemoveFromFavorites(item)}>
+                <Ionicons name="heart-dislike-outline" size={25} color="#FA4A0C" />
               </TouchableOpacity>
             </View>
           </View>
@@ -56,7 +58,7 @@ const FavoritesScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <CustomHeader title="stack" navigation={navigation} />
+      <CustomHeader title="drawer" navigation={navigation} />
       <View style={styles.container}>
         {favorites.length === 0 ? renderEmptyFavorites() : renderFavoriteItems()}
       </View>
@@ -67,13 +69,13 @@ const FavoritesScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f0f0f0',
   },
   container: {
     flex: 1,
     paddingTop: 20,
     paddingHorizontal: 16,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f0f0f0',
   },
   emptyFavoritesContainer: {
     flex: 1,
@@ -102,14 +104,15 @@ const styles = StyleSheet.create({
   favoriteItem: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    padding: 16,
+    padding: 20,
     marginVertical: 8,
     borderRadius: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3,
+		borderWidth: .7,
+		borderColor: "#D3D3D3",
   },
   favoriteItemImageContainer: {
     backgroundColor: "#f0f0f0",

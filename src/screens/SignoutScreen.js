@@ -1,9 +1,13 @@
+import { storeUserSession, clearUserSession, refreshAccessToken } from '../config/auth';
 
+const logout = async () => {
+	await clearUserSession();
+};
 
 const SignoutScreen = ({ navigation }) => {
-	return (
-		navigation.navigate('Login')
-	);
+	logout();
+	navigation.replace('Login');
+	return (<></>);
 };
 
 export default SignoutScreen

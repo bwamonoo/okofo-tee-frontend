@@ -7,19 +7,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const EditPaymentDeliveryScreen = ({ route, navigation }) => {
 	const insets = useSafeAreaInsets();
-  const { section } = route.params;
-  const { user: userData } = useContext(UserContext);
-  const [selectedPayment, setSelectedPayment] = useState(userData.paymentMethod);
-  const [selectedDelivery, setSelectedDelivery] = useState(userData.deliveryMethod);
+  // const { section } = route.params;
+  const { user, handleUpdateUser } = useContext(UserContext);
   const [showNetworkOptions, setShowNetworkOptions] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState('');
 
-  const handleSave = () => {
-    // Save payment and delivery methods
+  const [formData, setFormData] = useState({
+    paymentMethod: user.paymentMethod.type,
+    networkProvider: user.paymentMethod.provider,
+    deliveryMethod: user.deliveryMethod,
+  });
+
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+
+  const handleSave = async () => {
+    await handleUpdateUser(formData);
     navigation.goBack();
   };
 
-  const networkProviders = ['MTN', 'Airteltigo', 'Telecel']; // Add more if needed
+  const networkProviders = ['MTN', 'AirtelTigo', 'Telecel'];
 
   return (
     <SafeAreaView style={[{ flex: 1, backgroundColor: "#F5F3F3" }, { paddingTop: insets.top }]}>
@@ -30,18 +38,18 @@ const EditPaymentDeliveryScreen = ({ route, navigation }) => {
 					<View style={styles.section}>
 						<Text style={styles.title}>Payment Method</Text>
 						<TouchableOpacity
-							style={[styles.optionButton, selectedPayment === 'Mobile Money' && styles.selectedOption]}
+							style={[styles.optionButton, formData.paymentMethod === 'Mobile Money' && styles.selectedOption]}
 							onPress={() => {
-								setSelectedPayment('Mobile Money');
+                handleInputChange("paymentMethod", "Mobile Money");
 								setShowNetworkOptions(!showNetworkOptions);
 							}}
 						>
 							<Ionicons
 								name="phone-portrait-outline"
 								size={20}
-								color={selectedPayment === 'Mobile Money' ? '#FA4A0C' : '#888'}
+								color={formData.paymentMethod === 'Mobile Money' ? '#FA4A0C' : '#888'}
 							/>
-							<Text style={[styles.optionText, selectedPayment === 'Mobile Money' && styles.selectedText]}>
+							<Text style={[styles.optionText, formData.paymentMethod === 'Mobile Money' && styles.selectedText]}>
 								Mobile Money
 							</Text>
 						</TouchableOpacity>
@@ -52,12 +60,12 @@ const EditPaymentDeliveryScreen = ({ route, navigation }) => {
 									<TouchableOpacity
 										key={provider}
 										style={styles.radioButton}
-										onPress={() => setSelectedNetwork(provider)}
+										onPress={() => handleInputChange("networkProvider", provider)}
 									>
-										<View style={[styles.radioCircle, selectedNetwork === provider && styles.selectedCircle]}>
-											{selectedNetwork === provider && <View style={styles.innerDot} />}
+										<View style={[styles.radioCircle, formData.networkProvider === provider && styles.selectedCircle]}>
+											{formData.networkProvider === provider && <View style={styles.innerDot} />}
 										</View>
-										<Text style={[styles.optionText, selectedNetwork === provider && styles.selectedText]}>
+										<Text style={[styles.optionText, formData.networkProvider === provider && styles.selectedText]}>
 											{provider}
 										</Text>
 									</TouchableOpacity>
@@ -66,18 +74,18 @@ const EditPaymentDeliveryScreen = ({ route, navigation }) => {
 						)}
 
 						<TouchableOpacity
-							style={[styles.optionButton, selectedPayment === 'Card' && styles.selectedOption]}
+							style={[styles.optionButton, formData.paymentMethod === 'Card' && styles.selectedOption]}
 							onPress={() => {
-								setSelectedPayment('Card');
-								setShowNetworkOptions(false); // Hide network options if switching to Card
+                handleInputChange("paymentMethod","Card");
+								setShowNetworkOptions(false); // Hide network options if switching to card
 							}}
 						>
 							<Ionicons
 								name="card-outline"
 								size={20}
-								color={selectedPayment === 'Card' ? '#FA4A0C' : '#888'}
+								color={formData.paymentMethod === 'Card' ? '#FA4A0C' : '#888'}
 							/>
-							<Text style={[styles.optionText, selectedPayment === 'Card' && styles.selectedText]}>
+							<Text style={[styles.optionText, formData.paymentMethod === 'Card' && styles.selectedText]}>
 								Card
 							</Text>
 						</TouchableOpacity>
@@ -86,29 +94,29 @@ const EditPaymentDeliveryScreen = ({ route, navigation }) => {
 					<View style={styles.section}>
 					<Text style={styles.title}>Delivery Method</Text>
 					<TouchableOpacity
-						style={[styles.optionButton, selectedDelivery === 'Door Delivery' && styles.selectedOption]}
-						onPress={() => setSelectedDelivery('Door Delivery')}
+						style={[styles.optionButton, formData.deliveryMethod === 'Door Delivery' && styles.selectedOption]}
+						onPress={() => handleInputChange("deliveryMethod", "Door Delivery")}
 					>
 						<Ionicons
 							name="home-outline"
 							size={20}
-							color={selectedDelivery === 'Door Delivery' ? '#FA4A0C' : '#888'}
+							color={formData.deliveryMethod === 'Door Delivery' ? '#FA4A0C' : '#888'}
 						/>
-						<Text style={[styles.optionText, selectedDelivery === 'Door Delivery' && styles.selectedText]}>
+						<Text style={[styles.optionText, formData.deliveryMethod === 'Door Delivery' && styles.selectedText]}>
 							Door Delivery
 						</Text>
 					</TouchableOpacity>
 
 					<TouchableOpacity
-						style={[styles.optionButton, selectedDelivery === 'Pick Up' && styles.selectedOption]}
-						onPress={() => setSelectedDelivery('Pick Up')}
+						style={[styles.optionButton, formData.deliveryMethod === 'Pick Up' && styles.selectedOption]}
+						onPress={() => handleInputChange("deliveryMethod", "Pick Up")}
 					>
 						<Ionicons
 							name="walk-outline"
 							size={20}
-							color={selectedDelivery === 'Pick Up' ? '#FA4A0C' : '#888'}
+							color={formData.deliveryMethod === 'Pick Up' ? '#FA4A0C' : '#888'}
 						/>
-						<Text style={[styles.optionText, selectedDelivery === 'Pick Up' && styles.selectedText]}>
+						<Text style={[styles.optionText, formData.deliveryMethod === 'Pick Up' && styles.selectedText]}>
 							Pick Up
 						</Text>
 					</TouchableOpacity>
@@ -198,6 +206,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
+  },
+  selectedCircle: {
+    borderColor: '#FA4A0C',
   },
   innerDot: {
     height: 10,

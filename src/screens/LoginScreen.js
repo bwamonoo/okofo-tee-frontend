@@ -1,9 +1,14 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
+import React, { useRef, useState, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Image, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { images } from '../constants/images';
+import { UserContext } from "../context/UserContext";
+import { UserDataContext } from "../context/UserDataContext";
 
 const LoginScreen = ({ navigation }) => {
+  const { user, handleLoginUser } = useContext(UserContext);
+  const { fetchUserData } = useContext(UserDataContext);
+
   const insets = useSafeAreaInsets();
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -14,14 +19,23 @@ const LoginScreen = ({ navigation }) => {
 
   const [focusedField, setFocusedField] = useState(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
 
+  const onSubmit = async () => {
+    setLoading(true);
+    const response = await handleLoginUser(formData);
+
+    response.success ? navigation.replace("Customer") : response.message;
+    response.success && fetchUserData();
+    setLoading(false);  
+  };
+
   return (
     <SafeAreaView style={[{ flex: 1, backgroundColor: "#F5F3F3" }, { paddingTop: insets.top }]}>
-
       <View style={styles.upperDiv}>
         <Image source={images.okofoTee} />
         <View style={styles.upperDivText}>
@@ -77,11 +91,20 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
           </TouchableOpacity>
 
+          {/* Forgot Password Button */}
+          <TouchableOpacity style={styles.forgotPasswordButton} onPress={() => navigation.navigate("ForgotPassword")}>
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
         </View>
 
         <View style={styles.loginButtonContainer}>
-          <TouchableOpacity style={styles.loginButton} onPress={() => navigation.replace('Main')}>
-            <Text style={styles.loginText}>Login</Text>
+          <TouchableOpacity style={styles.loginButton} onPress={onSubmit} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.loginText}>Login</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -163,7 +186,15 @@ const styles = StyleSheet.create({
   loginText: {
     fontWeight: "bold",
     color: "white",
-  }
+  },
+  forgotPasswordButton: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  forgotPasswordText: {
+    color: '#FA4A0C',
+    textDecorationLine: 'underline',
+  },
 });
 
 export default LoginScreen;

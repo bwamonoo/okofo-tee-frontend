@@ -7,12 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const UserDetailsScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-  const { user, updateUser } = useContext(UserContext);
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [addressName, setAddressName] = useState(user.address.name);
-  const [residential, setResidential] = useState(user.address.residential);
-  const [phone, setPhone] = useState(user.address.phone);
+  const { user, handleUpdateUser, handleUpdatePassword } = useContext(UserContext);
 
   // Password update state
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -21,21 +16,20 @@ const UserDetailsScreen = ({ navigation }) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
-  const handleSave = () => {
-    updateUser({
-      name,
-      email,
-      address: {
-        name: addressName,
-        residential,
-        phone,
-      },
-    });
+  const [formData, setFormData] = useState({
+    name: user.name,
+    // email: user.email,
+    address: user.address.residential,
+    phoneNumber: user.address.phoneNumber,
+  });
+
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
   };
 
-  const handleUpdatePassword = () => {
-    console.log('Current Password:', currentPassword);
-    console.log('New Password:', newPassword);
+  const handleSave = async () => {
+    await handleUpdateUser(formData);
+    navigation.goBack();
   };
 
   return (
@@ -54,39 +48,29 @@ const UserDetailsScreen = ({ navigation }) => {
           <View style={styles.section}>
             <Text style={styles.label}>Name</Text>
             <TextInput
-              value={name}
-              onChangeText={setName}
+              value={ formData.name }
+              onChangeText={(value) => handleInputChange('name', value)}
               style={styles.input}
               placeholder="Enter your name"
             />
           </View>
 
-          <View style={styles.section}>
+          {/* <View style={styles.section}>
             <Text style={styles.label}>Email</Text>
             <TextInput
-              value={email}
-              onChangeText={setEmail}
+              value={formData.email}
+              onChangeText={(value) => handleInputChange('email', value)}
               style={styles.input}
               placeholder="Enter your email"
               keyboardType="email-address"
             />
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.label}>Address Name</Text>
-            <TextInput
-              value={addressName}
-              onChangeText={setAddressName}
-              style={styles.input}
-              placeholder="Enter address name"
-            />
-          </View>
+          </View> */}
 
           <View style={styles.section}>
             <Text style={styles.label}>Residential Address</Text>
             <TextInput
-              value={residential}
-              onChangeText={setResidential}
+              value={formData.address}
+              onChangeText={(value) => handleInputChange('address', value)}
               style={styles.input}
               placeholder="Enter residential address"
             />
@@ -95,8 +79,8 @@ const UserDetailsScreen = ({ navigation }) => {
           <View style={styles.section}>
             <Text style={styles.label}>Phone Number</Text>
             <TextInput
-              value={phone}
-              onChangeText={setPhone}
+              value={formData.phoneNumber}
+              onChangeText={(value) => handleInputChange('phoneNumber', value)}
               style={styles.input}
               keyboardType="phone-pad"
               placeholder="Enter phone number"
@@ -153,7 +137,7 @@ const UserDetailsScreen = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
-                onPress={handleUpdatePassword}
+                onPress={() => handleUpdatePassword({password: currentPassword, newPassword})}
                 style={styles.updatePasswordButton}
               >
                 <Text style={styles.updatePasswordText}>Change Password</Text>

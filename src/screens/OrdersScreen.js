@@ -1,116 +1,139 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../components/CustomHeader';
+import { OrderContext } from '../context/OrderContext';
 
 const OrdersScreen = ({ navigation }) => {
-  const [orderList, setOrderList] = useState([]); // Example cart items state (empty)
+  const { orders } = useContext(OrderContext);
 
   const renderEmptyOrderHistory = () => (
-    <View style={styles.emptyCartContainer}>
-      <Image source={require('../assets/images/empty-orders.png')} resizeMode="contain" style={styles.emptyCartImage} />
-      <View style={styles.emptyCartTextContainer}>
-        <Text style={styles.emptyCartTextTitle}>No orders yet</Text>
-        <Text style={styles.emptyCartText}>This page displays your order history. Add items to cart, proceed to checkout, place your order and come back again.</Text>
+    <View style={styles.emptyOrdersContainer}>
+      <Image source={require('../assets/images/empty-orders.png')} resizeMode="contain" style={styles.emptyOrdersImage} />
+      <Text style={styles.emptyOrdersTitle}>No Orders Yet</Text>
+      <Text style={styles.emptyOrdersText}>Place an order and come back here to see your order history.</Text>
+    </View>
+  );
+
+  const renderOrderItems = ({ item }) => (
+    <View style={styles.orderItem}>
+      <View style={styles.orderItemImageContainer}>
+        <Image source={{ uri: item.imageUrl}} style={styles.orderItemImage} resizeMode={item.shape === "circle" ? "cover": "contain"}/>
+      </View>
+
+      <View style={styles.orderItemDetails}>
+        <Text style={styles.orderItemName}>{item.name}</Text>
+        <Text style={styles.orderItemPrice}>GH₵ {item.price}</Text>
+        <Text style={styles.orderItemQuantity}>Quantity: {item.OrderMenu.menuQuantity}</Text>
+        <Text style={styles.orderItemDate}>{item.date}</Text>
       </View>
     </View>
   );
 
-  const renderOrderHistory = () => (
-    <>
-      <FlatList
-        data={cartItems}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.cartItem}>
-            <Image source={{ uri: item.image }} style={styles.cartItemImage} />
-
-            <Text style={styles.cartItemText}>{item.name}</Text>
-            <Text style={styles.cartItemPrice}>${item.price}</Text>
-          </View>
-        )}
-      />
-      <TouchableOpacity style={styles.checkoutButton} onPress={() => navigation.navigate('Checkout')}>
-        <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
-      </TouchableOpacity>
-    </>
-  );
-
   return (
-    <SafeAreaView style={{ flex: 1 }} >
-      <CustomHeader title="stack" navigation={navigation} />
+    <SafeAreaView style={styles.safeArea}>
+      <CustomHeader title="drawer" navigation={navigation} />
       <View style={styles.container}>
-        {orderList.length === 0 ? renderEmptyOrderHistory() : renderOrderHistory()}
+        {orders.length === 0 ? (
+          renderEmptyOrderHistory()
+        ) : (
+          <FlatList
+            data={orders}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderOrderItems}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
   container: {
     flex: 1,
+    paddingHorizontal: 16,
+    backgroundColor: '#f0f0f0',
+  },
+  // Empty orders styles
+  emptyOrdersContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 20,
-    justifyContent: 'center',
-    // backgroundColor: '#F5F5F5',
   },
-  emptyCartContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  emptyOrdersImage: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
   },
-  emptyCartImage: {
-    width: 100,
-    height: 170,
+  emptyOrdersTitle: {
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 10,
   },
-  emptyCartTextContainer: {
-    alignItems: 'center',
-    // backgroundColor: "lightblue",
-  },
-  emptyCartTextTitle: {
-    fontSize: 24,
-    fontFamily: 'Actor-Regular',
-    fontWeight: 'bold',
-    color: '#4D4D4D',
-    lineHeight: 45,
-  },
-  emptyCartText: {
-    fontSize: 15,
-    fontFamily: 'Actor-Regular',
-    color: '#B1B1B3',
-  },
-  cartItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 10,
-    elevation: 3,
-  },
-  cartItemImage: {
-    width: 60,
-    height: 60,
-    marginRight: 15,
-  },
-  cartItemText: {
+  emptyOrdersText: {
     fontSize: 16,
-    flex: 1,
+    color: '#7d7d7d',
+    textAlign: 'center',
+    paddingHorizontal: 40,
+    lineHeight: 22,
   },
-  cartItemPrice: {
+  // Order items styles
+  orderItem: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    marginVertical: 8,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+		borderWidth: .7,
+		borderColor: "#D3D3D3",
+  },
+  orderItemImageContainer: {
+    backgroundColor: "#f0f0f0",
+    width: 85,
+    height: 85,
+    borderRadius: 15,
+    overflow: 'hidden',
+  },
+  orderItemImage: {
+    width: '100%',
+    height: '100%',
+  },
+  orderItemDetails: {
+    flex: 1,
+    paddingHorizontal: 15,
+  },
+  orderItemName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4A4A4A',
+    marginTop: 5,
+  },
+  orderItemPrice: {
+    fontFamily: "Bangers-Regular",
     fontSize: 16,
     color: '#FA4A0C',
   },
-  checkoutButton: {
-    backgroundColor: '#FA4A0C',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginVertical: 20,
+  orderItemQuantity: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: '#4A4A4A',
   },
-  checkoutButtonText: {
-    fontSize: 18,
-    color: '#FFF',
+  orderItemDate: {
+    fontSize: 14,
+    color: '#999',
   },
 });
 

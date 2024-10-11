@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomHeader from '../components/CustomHeader';
 import { CartContext } from '../context/CartContext';
 import { FavoritesContext } from '../context/FavoritesContext';
 import { Ionicons } from '@expo/vector-icons';
 
-const FoodDetailScreen = ({ route }) => {
+const FoodDetailScreen = ({ navigation, route }) => {
   const { handleAddToCart } = useContext(CartContext);
   const { favorites, handleAddToFavorites, handleRemoveFromFavorites } = useContext(FavoritesContext);
   const { foodItem } = route.params;
@@ -19,76 +21,81 @@ const FoodDetailScreen = ({ route }) => {
   }, [favorites, foodItem]);
 
   const toggleFavorite = () => {
-    if (isFavorite) {
-      handleRemoveFromFavorites(foodItem.id);
-    } else {
-      handleAddToFavorites(foodItem);
-    }
+    isFavorite ? handleRemoveFromFavorites(foodItem) : handleAddToFavorites(foodItem);
     setIsFavorite(!isFavorite);  // Toggle favorite state
   };
 
   return (
-    <View style={styles.menuItem}>
-      {/* Favorite Button */}
-      <TouchableOpacity style={styles.favoriteButton} onPress={toggleFavorite}>
-        <Ionicons
-          name={isFavorite ? 'heart' : 'heart-outline'}
-          size={28}
-          color={isFavorite ? '#FA4A0C' : '#FA4A0C'}
-        />
-      </TouchableOpacity>
-
-      <View style={styles.imageContainer}>
-        <View style={[styles.menuImageContainer, foodItem.type === "circle" ? { backgroundColor: '#ffff' } : { backgroundColor: 'transparent' }]}>
-          <Image
-            style={[styles.menuImage, foodItem.type === "circle" ? { width: '100%', height: '100%' } : { width: '80%', height: '90%' }]}
-            source={foodItem.image}
-            resizeMode={foodItem.type === "circle" ? "cover" : "contain"}
+    <SafeAreaView style={styles.safeArea}>
+      <CustomHeader title="stack" navigation={navigation} />
+      <View style={styles.menuItem}>
+        {/* Favorite Button */}
+        <TouchableOpacity style={styles.favoriteButton} onPress={toggleFavorite}>
+          <Ionicons
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={28}
+            color={isFavorite ? '#FA4A0C' : '#FA4A0C'}
           />
+        </TouchableOpacity>
+
+        <View style={styles.imageContainer}>
+          <View style={[styles.menuImageContainer, foodItem.shape === "circle" ? { backgroundColor: '#ffff' } : { backgroundColor: 'transparent' }]}>
+            <Image
+              style={[styles.menuImage, foodItem.shape === "circle" ? { width: '100%', height: '100%' } : { width: '80%', height: '90%' }]}
+              source={{ uri: foodItem.imageUrl}}
+              resizeMode={foodItem.shape === "circle" ? "cover" : "contain"}
+            />
+          </View>
+
+          <View style={styles.dotsContainer}>
+            <Image
+              style={styles.dots}
+              source={require("../assets/images/dots.png")}
+              resizeMode="contain"
+            />
+          </View>
         </View>
 
-        <View style={styles.dotsContainer}>
-          <Image
-            style={styles.dots}
-            source={require("../assets/images/dots.png")}
-            resizeMode="contain"
-          />
+        <View style={styles.menuItemInfo}>
+          <View style={styles.infoTitle}>
+            <Text style={styles.menuItemText}>{foodItem.name}</Text>
+            <Text style={styles.menuItemPrice}>GH₵ {foodItem.price}</Text>
+          </View>
+
+          <View style={styles.infoContent}>
+            <Text style={styles.infoHeader}>Delivery info</Text>
+            <Text style={styles.infoText}>
+              Delivered between Monday Aug and Thursday 20 from 8 PM to 9:32 PM
+            </Text>
+
+            <Text style={styles.infoHeader}>Return policy</Text>
+            <Text style={styles.infoText}>
+              All our foods are double checked before leaving our stores, so in case you find a broken food, please contact our hotline immediately.
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => { handleAddToCart(foodItem); }}
+              style={styles.addButton}>
+              <Text style={styles.addText}>Add to cart</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
+  </SafeAreaView>
 
-      <View style={styles.menuItemInfo}>
-        <View style={styles.infoTitle}>
-          <Text style={styles.menuItemText}>{foodItem.name}</Text>
-          <Text style={styles.menuItemPrice}>{foodItem.price.toFixed(2)}</Text>
-        </View>
-
-        <View style={styles.infoContent}>
-          <Text style={styles.infoHeader}>Delivery info</Text>
-          <Text style={styles.infoText}>
-            Delivered between Monday Aug and Thursday 20 from 8 PM to 9:32 PM
-          </Text>
-
-          <Text style={styles.infoHeader}>Return policy</Text>
-          <Text style={styles.infoText}>
-            All our foods are double checked before leaving our stores, so in case you find a broken food, please contact our hotline immediately.
-          </Text>
-
-          <TouchableOpacity
-            onPress={() => { handleAddToCart(foodItem); }}
-            style={styles.addButton}>
-            <Text style={styles.addText}>Add to cart</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#d9d9d9',
+  },
   menuItem: {
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 10,
+    backgroundColor: '#f0f0f0',
   },
   favoriteButton: {
     position: 'absolute',

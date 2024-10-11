@@ -7,7 +7,7 @@ import { CartContext } from '../context/CartContext';
 import CartItem from '../components/CartItem';
 
 const CartScreen = ({ navigation }) => {
-  const { cart, handleClearCart, subTotal, totalPrice } = useContext(CartContext);
+  const { cart, handleClearCart, subTotal, totalPrice, cartQuantity } = useContext(CartContext);
 
   const renderEmptyCart = () => (
     <View style={styles.emptyCartContainer}>
@@ -35,25 +35,25 @@ const CartScreen = ({ navigation }) => {
 
         <View style={styles.midSection}>
           <View style={styles.infoSection}>
-            <Text>Items({cart.length})</Text>
-            <Text>GHC {subTotal}</Text>
+            <Text>Items({cartQuantity})</Text>
+            <Text>GH₵ {subTotal}</Text>
           </View>
 
           <View style={styles.infoSection}>
             <Text>Delivery Fee</Text>
-            <Text>GHC 20.00</Text>
+            <Text>GH₵ 20.00</Text>
           </View>
 
           <View style={styles.infoSection}>
             <Text>Sub Total</Text>
-            <Text>{subTotal}</Text>
+            <Text>GH₵ {subTotal}</Text>
           </View>
         </View>
 
         <View style={styles.lowerSection}>
           <View style={styles.infoSection}>
             <Text style={styles.total}>Total</Text>
-            <Text style={styles.total}>{totalPrice}</Text>
+            <Text style={styles.total}>GH₵ {totalPrice}</Text>
           </View>
 
           <TouchableOpacity style={styles.checkoutButton} onPress={() => navigation.navigate('Checkout')}>
@@ -78,7 +78,7 @@ const CartScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#EFEDED'  }}>
       <CustomHeader title="stack" navigation={navigation} />
       <View style={styles.container}>
         {cart.length === 0 ? renderEmptyCart() : renderCartItems()}
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: 13,
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#EFEDED',
   },
   emptyCartContainer: {
     flex: 1,
@@ -120,13 +120,13 @@ const styles = StyleSheet.create({
   },
   upperDiv: {
     flex: 1,
-    backgroundColor: '#F5F3F3',
+    backgroundColor: '#F8F8F8',
     justifyContent: 'center',
     paddingVertical: 15,
     paddingHorizontal: 12,
-    borderWidth: 0.3,
-    borderColor: 'gray',
-    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#D3D3D3',
+    borderRadius: 7,
   },
   divider: {
     height: 1,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   lowerDiv: {
     flex: 3,
-    backgroundColor: '#F5F3F3',
+    backgroundColor: '#F8F8F8',
     marginVertical: 10,
     paddingVertical: 1,
     paddingHorizontal: 10,

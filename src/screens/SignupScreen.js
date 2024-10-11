@@ -1,28 +1,52 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useRef, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { images } from '../constants/images';
 import { Ionicons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
+import { UserContext } from "../context/UserContext";
+import { toast } from "../styles/toastStyles";
 
 const SignupScreen = ({ navigation }) => {
+  const { user, handleRegister } = useContext(UserContext);
+
   const insets = useSafeAreaInsets();
   const inputsRef = useRef({});
   const [formData, setFormData] = useState({
-    fullName: '',
-    phoneNumber: '',
+    name: '',
     email: '',
+    address: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    userGroupId: 2,
   });
 
   const [focusedField, setFocusedField] = useState(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
+
+  const onSubmit = async () => {
+    setLoading(true);
+
+    let response;
+
+    const { confirmPassword, ...finalFormData } = formData;
+    console.log("final data: ", finalFormData);
+
+    formData.password !== confirmPassword && toast.error("Password Mismatch!")
+
+    formData.password === confirmPassword &&(response = await handleRegister(finalFormData)); 
+
+    response && (response.success ? navigation.navigate("EmailVerification", response.data) : console.log(`${response.message}:; `, response.data));
+    
+    setLoading(false);  
+  }
 
   return (
     <SafeAreaView style={[{ flex: 1, backgroundColor: "#F5F3F3" }, { paddingTop: insets.top }]}>
@@ -52,18 +76,18 @@ const SignupScreen = ({ navigation }) => {
         <View style={styles.form}>
 
           <TouchableOpacity 
-            style={[styles.formField, { borderBottomColor: focusedField === 'fullName' ? '#FA4A0C' : '#B1B1B3' }]} 
+            style={[styles.formField, { borderBottomColor: focusedField === 'name' ? '#FA4A0C' : '#B1B1B3' }]} 
             onPress={() => {
-              setFocusedField('fullName');
-              inputsRef.current.fullName.focus()
+              setFocusedField('name');
+              inputsRef.current.name.focus()
             }}>
             <TextInput
-              ref={(comp) => (inputsRef.current.fullName = comp)}
+              ref={(comp) => (inputsRef.current.name = comp)}
               style={styles.formTextInput}
-              value={formData.fullName}
-              onChangeText={(value) => handleInputChange('fullName', value)}
+              value={formData.name}
+              onChangeText={(value) => handleInputChange('name', value)}
               placeholder="Full Name"
-              onFocus={() => setFocusedField('fullName')}
+              onFocus={() => setFocusedField('name')}
               onBlur={() => setFocusedField(null)}
             />
           </TouchableOpacity>
@@ -149,8 +173,12 @@ const SignupScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.signupButtonContainer}>
-          <TouchableOpacity style={styles.signupButton} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.signupText}>Sign Up</Text>
+          <TouchableOpacity style={styles.signupButton} onPress={onSubmit} disabled={loading}>
+          {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.signupText}>Sign Up</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>

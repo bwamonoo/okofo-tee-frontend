@@ -6,9 +6,11 @@ import MenuItem from '../components/MenuItem';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const customStyles = {
-	height: 200,
-	marginVertical: 37,
-	marginHorizontal: 10,
+	menuItem: {
+		height: 200,
+		marginVertical: 37,
+		marginHorizontal: 10,
+	}
 }
 
 const MenuListScreen = ({ navigation, route }) => {

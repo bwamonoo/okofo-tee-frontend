@@ -53,7 +53,7 @@ const menuData = [
     image: require("../assets/images/chicken-tomato-mix.png"),
     price: 210.0,
     menuCategoryId: 1,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 9,
@@ -61,7 +61,7 @@ const menuData = [
     image: require("../assets/images/assorted-rice.png"),
     price: 51.0,
     menuCategoryId: 1,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 10,
@@ -69,7 +69,7 @@ const menuData = [
     image: require("../assets/images/rice-and-chicken.png"),
     price: 68.0,
     menuCategoryId: 1,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 11,
@@ -77,7 +77,7 @@ const menuData = [
     image: require("../assets/images/spicy-fish-sauce.png"),
     price: 45.99,
     menuCategoryId: 1,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 12,
@@ -112,7 +112,7 @@ const menuData = [
     image: require("../assets/images/chicken-and-pepper-sauce.png"),
     menuCategoryId: 4,
     price: 60.0,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 17,
@@ -120,7 +120,7 @@ const menuData = [
     image: require("../assets/images/pork-sauce.png"),
     price: 63.59,
     menuCategoryId: 4,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 18,
@@ -128,7 +128,7 @@ const menuData = [
     image: require("../assets/images/prawn-sauce.png"),
     price: 50.65,
     menuCategoryId: 4,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 19,
@@ -136,7 +136,7 @@ const menuData = [
     image: require("../assets/images/spicy-fish-sauce.png"),
     price: 23.0,
     menuCategoryId: 4,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 20,
@@ -144,7 +144,7 @@ const menuData = [
     image: require("../assets/images/beef-sauce.png"),
     price: 50.0,
     menuCategoryId: 4,
-    type: "circle",
+    shape: "circle",
   },
   {
     id: 21,
@@ -152,7 +152,7 @@ const menuData = [
     image: require("../assets/images/vegetable-sauce.png"),
     price: 50.0,
     menuCategoryId: 4,
-    type: "circle",
+    shape: "circle",
   },
 ];
 

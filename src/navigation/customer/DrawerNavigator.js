@@ -1,12 +1,12 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import TabNavigator from './TabNavigator';
-import ProfileScreen from '../screens/ProfileScreen';
-import OrdersScreen from '../screens/OrdersScreen';
-import OffersScreen from '../screens/OffersScreen';
-import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
-import SecurityScreen from '../screens/SecurityScreen';
-import SignoutScreen from '../screens/SignoutScreen';
+import ProfileScreen from '../../screens/ProfileScreen';
+import OrdersScreen from '../../screens/OrdersScreen';
+import OffersScreen from '../../screens/OffersScreen';
+import PrivacyPolicyScreen from '../../screens/PrivacyPolicyScreen';
+import SecurityScreen from '../../screens/SecurityScreen';
+import SignoutScreen from '../../screens/SignoutScreen';
 
 const Drawer = createDrawerNavigator();
 

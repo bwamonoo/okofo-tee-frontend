@@ -88,12 +88,12 @@ const extraStyles = {
 
 const MenuItem = ({ item, navigation, screen, customStyles }) => {
   return (
-    <TouchableOpacity style={[styles.menuItem, screen === "MenuListScreen" ? customStyles : defaultStyles]} onPress={() => navigation.navigate('FoodDetail', { foodItem: item })}>
-      <View style={[styles.imageContainer, extraStyles[item.menuCategoryId].imageContainer]}>
-			<Image style={[styles.image, extraStyles[item.menuCategoryId].image]} source={item.image}  resizeMode="cover"/>
+    <TouchableOpacity style={[styles.menuItem, screen ? customStyles.menuItem : defaultStyles]} onPress={() => navigation.navigate('FoodDetail', { foodItem: item })}>
+      <View style={[styles.imageContainer, extraStyles[item.menuCategoryId].imageContainer, screen ? customStyles.imageContainer : {}]}>
+			<Image style={[styles.image, extraStyles[item.menuCategoryId].image ]}  source={{ uri: item.imageUrl }}  resizeMode="cover"/>
       </View>
-      <Text style={styles.menuItemText}>{item.name}</Text>
-      <Text style={styles.menuItemPrice}>{item.price.toFixed(2)}</Text>
+      <Text style={[styles.menuItemText, screen ? customStyles.menuItemText : {}]}>{item.name}</Text>
+      <Text style={[styles.menuItemPrice, screen ? customStyles.menuItemPrice : {}]}>GH₵ {item.price}</Text>
     </TouchableOpacity>
   );
 };
